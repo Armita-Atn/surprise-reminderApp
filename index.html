@@ -109,7 +109,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 70px;
+    height: 33vh;
     overflow: hidden;
     line-height: 0;
     pointer-events: none;
@@ -119,7 +119,7 @@
     position: absolute;
     bottom: 0;
     width: 200%;
-    height: 100%;
+    height: 70%;
   }
   .wave-back {
     animation: wave-move 9s linear infinite;
@@ -127,22 +127,41 @@
   }
   .wave-front {
     animation: wave-move 6s linear infinite reverse;
-    opacity: 0.8;
+    opacity: 0.85;
   }
   @keyframes wave-move {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .wave-back, .wave-front { animation: none; }
+  .wave-logo {
+    position: absolute;
+    bottom: 45%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 90px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 6px 16px rgba(20,20,60,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: wave-bob 3.4s ease-in-out infinite;
   }
-  main { position: relative; z-index: 1; padding-bottom: 70px; }
+  .wave-logo img { width: 62px; height: auto; }
+  @keyframes wave-bob {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-10px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wave-back, .wave-front, .wave-logo { animation: none; }
+  }
+  main { position: relative; z-index: 1; padding-bottom: 33vh; }
 </style>
 </head>
 <body>
 
-<div id="loginScreen" style="display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:24px; background:var(--bg);">
-  <img src="logo-original.png" alt="Surprise" style="height:50px; margin-bottom:24px;">
+<div id="loginScreen" style="display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:24px; padding-bottom:33vh; background:var(--bg);">
   <div class="card" style="width:100%; max-width:340px;">
     <h2>ورود</h2>
     <label>رمز عبور</label>
@@ -212,6 +231,7 @@
   <svg class="wave-front" viewBox="0 0 2800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M0,90 C400,20 800,140 1400,90 C2000,40 2400,140 2800,90 L2800,140 L0,140 Z" fill="#23c6d6"></path>
   </svg>
+  <div class="wave-logo"><img src="logo-original.png" alt="Surprise"></div>
 </div>
 
 </body>
