@@ -108,7 +108,8 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 100%;
+    right: 0;
+    width: auto;
     height: 42vh;
     overflow: hidden;
     line-height: 0;
@@ -149,10 +150,10 @@
     justify-content: center;
     animation: wave-bob 3.6s ease-in-out infinite;
   }
-  .wave-logo img { width: 78px; height: auto; transform: rotate(45deg); }
+  .wave-logo img { width: 78px; height: auto; transform: rotate(-135deg); }
   @keyframes wave-bob {
-    0%, 100% { transform: translateX(-50%) rotate(-45deg) translateY(0); }
-    50% { transform: translateX(-50%) rotate(-45deg) translateY(-10px); }
+    0%, 100% { transform: translateX(-50%) rotate(135deg) translateY(0); }
+    50% { transform: translateX(-50%) rotate(135deg) translateY(-10px); }
   }
   @media (prefers-reduced-motion: reduce) {
     .wave-back, .wave-front, .wave-logo { animation: none; }
