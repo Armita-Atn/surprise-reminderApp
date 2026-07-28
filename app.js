@@ -33,11 +33,63 @@ for (let d = 1; d <= 31; d++) {
   daySel.appendChild(opt);
 }
 
+// ---------- سلکت‌های تاریخ سررسید (پیش‌فرض: تاریخ ورودی + ۲۵ روز) ----------
+const dueYearSel = document.getElementById('dueYear');
+const dueMonthSel = document.getElementById('dueMonth');
+const dueDaySel = document.getElementById('dueDay');
+
+function computeDefaultDueJalali() {
+  const jy = Number(yearSel.value), jm = Number(monthSel.value), jd = Number(daySel.value);
+  const startIso = JalaliCalendar.jalaliToIso(jy, jm, jd);
+  const startDate = new Date(startIso);
+  startDate.setDate(startDate.getDate() + 25);
+  const iso = startDate.toISOString().slice(0, 10);
+  const [gy, gm, gd] = iso.split('-').map(Number);
+  return JalaliCalendar.toJalali(gy, gm, gd);
+}
+
+function buildDueSelects() {
+  const dueJ = computeDefaultDueJalali();
+
+  dueYearSel.innerHTML = '';
+  for (let y = dueJ.jy - 1; y <= dueJ.jy + 1; y++) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    if (y === dueJ.jy) opt.selected = true;
+    dueYearSel.appendChild(opt);
+  }
+
+  dueMonthSel.innerHTML = '';
+  JalaliCalendar.monthNames.forEach((name, i) => {
+    const opt = document.createElement('option');
+    opt.value = i + 1;
+    opt.textContent = name;
+    if (i + 1 === dueJ.jm) opt.selected = true;
+    dueMonthSel.appendChild(opt);
+  });
+
+  dueDaySel.innerHTML = '';
+  for (let d = 1; d <= 31; d++) {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = d;
+    if (d === dueJ.jd) opt.selected = true;
+    dueDaySel.appendChild(opt);
+  }
+}
+
+buildDueSelects();
+// هر بار تاریخ ورودی عوض بشه، تاریخ سررسید به‌صورت پیشنهادی (۲۵ روز بعد) دوباره ساخته می‌شه
+// اگه خودت دستی سررسید رو عوض کرده باشی و بعد دوباره تاریخ ورودی رو عوض کنی، پیشنهاد جدید جایگزین می‌شه
+[yearSel, monthSel, daySel].forEach(sel => sel.addEventListener('change', buildDueSelects));
+
 // ---------- افزودن مشتری ----------
 document.getElementById('addBtn').addEventListener('click', async () => {
   const name = document.getElementById('custName').value.trim();
   const amount = document.getElementById('custAmount').value;
   const jy = Number(yearSel.value), jm = Number(monthSel.value), jd = Number(daySel.value);
+  const djy = Number(dueYearSel.value), djm = Number(dueMonthSel.value), djd = Number(dueDaySel.value);
 
   if (!name) {
     alert('نام مشتری رو وارد کن');
@@ -45,12 +97,13 @@ document.getElementById('addBtn').addEventListener('click', async () => {
   }
 
   const startDateIso = JalaliCalendar.jalaliToIso(jy, jm, jd);
+  const dueDateIso = JalaliCalendar.jalaliToIso(djy, djm, djd);
 
   try {
     const res = await fetch(`${API_URL}/customers`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, startDate: startDateIso, amount: amount ? Number(amount) : null })
+      body: JSON.stringify({ name, startDate: startDateIso, dueDate: dueDateIso, amount: amount ? Number(amount) : null })
     });
     if (!res.ok) throw new Error('خطا در ثبت');
     document.getElementById('custName').value = '';
@@ -83,7 +136,7 @@ async function loadCustomers() {
         badgeClass = 'warn';
       }
       const dueJalali = JalaliCalendar.isoToJalaliDisplay(c.dueDate);
-      const amountText = c.amount ? `${Number(c.amount).toLocaleString('fa-IR')} تومان · ` : '';
+      const amountText = c.amount ? `${Number(c.amount).toLocaleString('fa-IR')} ریال · ` : '';
       return `
         <div class="customer-item">
           <div class="info">
