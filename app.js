@@ -1,7 +1,7 @@
 // ================================
 // آدرس سرور
 // ================================
-const API_URL = 'https://surprise-reminder-1.onrender.com/api';
+const API_URL = 'https://surprise-reminder.onrender.com/api';
 const TOKEN_KEY = 'reminder_app_token';
 
 function getToken() {
