@@ -103,10 +103,56 @@
     background: none; border: none; color: var(--muted); font-size: 18px; padding: 4px 8px; cursor: pointer;
   }
   .empty-state { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 0; }
+
+  .wave-wrap {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    overflow: hidden;
+    line-height: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .wave-wrap svg {
+    position: absolute;
+    bottom: 0;
+    width: 200%;
+    height: 100%;
+  }
+  .wave-back {
+    animation: wave-move 9s linear infinite;
+    opacity: 0.45;
+  }
+  .wave-front {
+    animation: wave-move 6s linear infinite reverse;
+    opacity: 0.8;
+  }
+  @keyframes wave-move {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wave-back, .wave-front { animation: none; }
+  }
+  main { position: relative; z-index: 1; padding-bottom: 70px; }
 </style>
 </head>
 <body>
 
+<div id="loginScreen" style="display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:24px; background:var(--bg);">
+  <img src="logo-original.png" alt="Surprise" style="height:50px; margin-bottom:24px;">
+  <div class="card" style="width:100%; max-width:340px;">
+    <h2>ورود</h2>
+    <label>رمز عبور</label>
+    <input type="password" id="loginPassword" placeholder="رمز رو وارد کن">
+    <button class="btn-primary" id="loginBtn">ورود</button>
+    <div id="loginError" style="color:var(--danger); font-size:12px; margin-top:8px; display:none;">رمز اشتباهه</div>
+  </div>
+</div>
+
+<div id="appScreen" style="display:none;">
 <header>
   <img src="logo-original.png" alt="Surprise">
   <div>
@@ -127,17 +173,24 @@
     <label>نام مشتری</label>
     <input type="text" id="custName" placeholder="مثلاً فروشگاه رفاه شعبه ۳">
 
-    <label>مبلغ (اختیاری، تومان)</label>
-    <input type="number" id="custAmount" placeholder="مثلاً 15000000">
+    <label>مبلغ (اختیاری، ریال)</label>
+    <input type="number" id="custAmount" placeholder="مثلاً 150000000">
 
-    <label>تاریخ شروع (شمسی)</label>
+    <label>تاریخ ورودی (شمسی)</label>
     <div class="date-row">
       <select id="dYear"></select>
       <select id="dMonth"></select>
       <select id="dDay"></select>
     </div>
 
-    <button class="btn-primary" id="addBtn">ثبت مشتری (سررسید: ۲۵ روز بعد)</button>
+    <label>تاریخ سررسید تسویه (پیش‌فرض ۲۵ روز بعد - قابل تغییر)</label>
+    <div class="date-row">
+      <select id="dueYear"></select>
+      <select id="dueMonth"></select>
+      <select id="dueDay"></select>
+    </div>
+
+    <button class="btn-primary" id="addBtn">ثبت مشتری</button>
   </div>
 
   <div class="card">
@@ -147,7 +200,19 @@
 
 </main>
 
+</div>
+
 <script src="jalali.js"></script>
 <script src="app.js"></script>
+
+<div class="wave-wrap">
+  <svg class="wave-back" viewBox="0 0 2800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,70 C350,140 700,0 1400,70 C2100,140 2450,0 2800,70 L2800,140 L0,140 Z" fill="#7fe0ea"></path>
+  </svg>
+  <svg class="wave-front" viewBox="0 0 2800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,90 C400,20 800,140 1400,90 C2000,40 2400,140 2800,90 L2800,140 L0,140 Z" fill="#23c6d6"></path>
+  </svg>
+</div>
+
 </body>
 </html>
