@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>یادآور تسویه | Surprise</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e1b7a">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1e1b7a;
+    --navy-light: #2f2ba3;
+    --cyan: #23c6d6;
+    --orange: #f2894a;
+    --bg: #f5f6fb;
+    --card: #ffffff;
+    --text: #1c1c28;
+    --muted: #7b7d92;
+    --danger: #e0483e;
+    --warn: #f2a63c;
+    --ok: #2fb673;
+    --border: #e6e7f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding-bottom: 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--navy-light));
+    padding: 18px 20px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 0 0 22px 22px;
+    box-shadow: 0 4px 18px rgba(30,27,122,0.25);
+  }
+  header img { height: 34px; background: white; border-radius: 8px; padding: 4px 8px; }
+  header h1 { color: white; font-size: 16px; margin: 0; font-weight: 600; }
+  header p { color: #cfd0f5; font-size: 12px; margin: 2px 0 0; }
+
+  main { max-width: 480px; margin: 0 auto; padding: 16px; }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(20,20,50,0.05);
+    border: 1px solid var(--border);
+  }
+
+  .card h2 { font-size: 14px; margin: 0 0 12px; color: var(--navy); }
+
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+  input[type=text], input[type=number] {
+    width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+    font-family: inherit; font-size: 14px; margin-bottom: 12px; background: #fafbff;
+  }
+  .date-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .date-row select {
+    flex: 1; padding: 10px 6px; border-radius: 10px; border: 1px solid var(--border);
+    font-family: inherit; font-size: 13px; background: #fafbff;
+  }
+  button {
+    font-family: inherit; border: none; border-radius: 10px; padding: 11px 16px;
+    font-size: 14px; cursor: pointer; font-weight: 600;
+  }
+  .btn-primary { background: var(--navy); color: white; width: 100%; }
+  .btn-primary:active { background: var(--navy-light); }
+  .btn-secondary { background: #eef0fb; color: var(--navy); width: 100%; margin-bottom: 8px; }
+
+  .notif-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fff3e8; border: 1px solid #ffdcb8; border-radius: 12px;
+    padding: 10px 14px; margin-bottom: 16px; font-size: 13px;
+  }
+  .notif-banner button { background: var(--orange); color: white; font-size: 12px; padding: 7px 12px; }
+  .notif-banner.ok { background: #e9f9f0; border-color: #bdecd3; }
+
+  .customer-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px; border-radius: 12px; background: #fafbff; border: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .customer-item .info { flex: 1; }
+  .customer-item .name { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .customer-item .meta { font-size: 11px; color: var(--muted); }
+  .badge {
+    font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 20px; white-space: nowrap;
+    margin-inline-start: 8px;
+  }
+  .badge.danger { background: #fde7e5; color: var(--danger); }
+  .badge.warn { background: #fef1dc; color: #b9760f; }
+  .badge.ok { background: #e2f7ec; color: var(--ok); }
+  .del-btn {
+    background: none; border: none; color: var(--muted); font-size: 18px; padding: 4px 8px; cursor: pointer;
+  }
+  .empty-state { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo-original.png" alt="Surprise">
+  <div>
+    <h1>یادآور تسویه‌حساب</h1>
+    <p>سررسید تسویه‌ی مشتری‌ها</p>
+  </div>
+</header>
+
+<main>
+
+  <div id="notifBanner" class="notif-banner" style="display:none;">
+    <span id="notifText"></span>
+    <button id="notifBtn">فعال‌سازی</button>
+  </div>
+
+  <div class="card">
+    <h2>افزودن مشتری جدید</h2>
+    <label>نام مشتری</label>
+    <input type="text" id="custName" placeholder="مثلاً فروشگاه رفاه شعبه ۳">
+
+    <label>مبلغ (اختیاری، تومان)</label>
+    <input type="number" id="custAmount" placeholder="مثلاً 15000000">
+
+    <label>تاریخ شروع (شمسی)</label>
+    <div class="date-row">
+      <select id="dYear"></select>
+      <select id="dMonth"></select>
+      <select id="dDay"></select>
+    </div>
+
+    <button class="btn-primary" id="addBtn">ثبت مشتری (سررسید: ۲۵ روز بعد)</button>
+  </div>
+
+  <div class="card">
+    <h2>لیست سررسیدها</h2>
+    <div id="customerList"></div>
+  </div>
+
+</main>
+
+<script src="jalali.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
