@@ -18,11 +18,14 @@
     --bg: #f5f6fb;
     --card: #ffffff;
     --text: #1c1c28;
-    --muted: #7b7d92;
+    --muted: #8a8c9e;
     --danger: #e0483e;
     --warn: #f2a63c;
     --ok: #2fb673;
-    --border: #e6e7f0;
+    --border: #ebecf3;
+    --wave1: #cdeef4;
+    --wave2: #4fd0df;
+    --wave3: #1e5f8a;
   }
   * { box-sizing: border-box; }
   body {
@@ -45,7 +48,7 @@
   header h1 { color: white; font-size: 16px; margin: 0; font-weight: 600; }
   header p { color: #cfd0f5; font-size: 12px; margin: 2px 0 0; }
 
-  main { max-width: 480px; margin: 0 auto; padding: 16px; }
+  main { max-width: 480px; margin: 0 auto; padding: 16px; position: relative; z-index: 1; }
 
   .card {
     background: var(--card);
@@ -59,7 +62,7 @@
   .card h2 { font-size: 14px; margin: 0 0 12px; color: var(--navy); }
 
   label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
-  input[type=text], input[type=number] {
+  input[type=text], input[type=number], input[type=password] {
     width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
     font-family: inherit; font-size: 14px; margin-bottom: 12px; background: #fafbff;
   }
@@ -74,7 +77,6 @@
   }
   .btn-primary { background: var(--navy); color: white; width: 100%; }
   .btn-primary:active { background: var(--navy-light); }
-  .btn-secondary { background: #eef0fb; color: var(--navy); width: 100%; margin-bottom: 8px; }
 
   .notif-banner {
     display: flex; align-items: center; justify-content: space-between;
@@ -104,13 +106,63 @@
   }
   .empty-state { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 0; }
 
+  /* ---------- صفحه‌ی ورود / ثبت‌نام ---------- */
+  #authScreen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    padding-bottom: 46vh;
+    position: relative;
+    z-index: 1;
+  }
+  .auth-card {
+    width: 100%; max-width: 320px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 8px 24px rgba(20,20,60,0.08);
+  }
+  .auth-tabs {
+    display: flex;
+    margin-bottom: 18px;
+    border-radius: 10px;
+    background: #eef0f8;
+    padding: 4px;
+  }
+  .auth-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .auth-tab.active {
+    background: white;
+    color: var(--navy);
+    box-shadow: 0 1px 4px rgba(20,20,60,0.1);
+  }
+  .auth-card input {
+    text-align: center;
+  }
+  #authError {
+    color: var(--danger); font-size: 12px; margin-top: 4px; display: none; text-align: center;
+  }
+
+  /* ---------- موج شناور (سه تُن آبی) ---------- */
   .wave-wrap {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     width: auto;
-    height: 72vh;
+    height: 46vh;
     overflow: hidden;
     line-height: 0;
     pointer-events: none;
@@ -121,46 +173,55 @@
     bottom: 0;
     left: 0;
     width: 200%;
-    height: 62%;
+    height: 60%;
   }
-  .wave-back {
-    animation: wave-move 24s linear infinite;
-    opacity: 0.45;
-  }
-  .wave-front {
-    animation: wave-move 17s linear infinite reverse;
-    opacity: 0.85;
-  }
+  .wave-l1 { animation: wave-move 26s linear infinite; opacity: 0.55; }
+  .wave-l2 { animation: wave-move 19s linear infinite reverse; opacity: 0.75; }
+  .wave-l3 { animation: wave-move 14s linear infinite; opacity: 0.95; }
   @keyframes wave-move {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
   }
-  .wave-logo {
+
+  .wave-clock {
     position: absolute;
-    bottom: 35%;
+    bottom: 30%;
     left: 50%;
-    width: 140px;
-    animation: wave-bob 3.6s ease-in-out infinite;
+    width: 128px;
+    height: 128px;
+    animation: wave-bob 3.8s ease-in-out infinite;
   }
-  .wave-logo img { width: 100%; height: auto; display: block; filter: drop-shadow(0 4px 10px rgba(20,20,60,0.25)); }
+  .wave-clock svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 14px rgba(20,20,60,0.25)); }
+  .wave-clock img {
+    position: absolute;
+    width: 58px;
+    left: 50%;
+    top: 66%;
+    transform: translate(-50%, -50%);
+  }
   @keyframes wave-bob {
     0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-10px); }
+    50% { transform: translateX(-50%) translateY(-9px); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .wave-back, .wave-front, .wave-logo { animation: none; }
+    .wave-l1, .wave-l2, .wave-l3, .wave-clock { animation: none; }
   }
-  main { position: relative; z-index: 1; padding-bottom: 72vh; }
 </style>
 </head>
 <body>
 
-<div id="loginScreen" style="display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:24px; padding-bottom:72vh; background:var(--bg);">
-  <div class="card" style="width:100%; max-width:340px;">
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tabLogin">ورود</div>
+      <div class="auth-tab" id="tabSignup">ثبت‌نام</div>
+    </div>
+    <label>نام کاربری</label>
+    <input type="text" id="authUsername" placeholder="نام کاربری">
     <label>رمز عبور</label>
-    <input type="password" id="loginPassword" placeholder="رمز رو وارد کن">
-    <button class="btn-primary" id="loginBtn" style="margin-top:14px; background:var(--navy);">ورود به Reminder</button>
-    <div id="loginError" style="color:var(--danger); font-size:12px; margin-top:8px; display:none;">رمز اشتباهه</div>
+    <input type="password" id="authPassword" placeholder="رمز عبور">
+    <button class="btn-primary" id="authBtn" style="margin-top:6px;">ورود</button>
+    <div id="authError"></div>
   </div>
 </div>
 
@@ -211,21 +272,37 @@
   </div>
 
 </main>
+</div>
 
+<div class="wave-wrap">
+  <svg class="wave-l1" viewBox="0 0 2800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,40.0 L20,40.9 L40,41.8 L60,42.6 L80,43.3 L100,43.9 L120,44.4 L140,44.8 L160,45.0 L180,45.0 L200,44.9 L220,44.6 L240,44.2 L260,43.6 L280,42.9 L300,42.2 L320,41.3 L340,40.4 L360,39.6 L380,38.7 L400,37.8 L420,37.1 L440,36.4 L460,35.8 L480,35.4 L500,35.1 L520,35.0 L540,35.0 L560,35.2 L580,35.6 L600,36.1 L620,36.7 L640,37.4 L660,38.2 L680,39.1 L700,40.0 L720,40.9 L740,41.8 L760,42.6 L780,43.3 L800,43.9 L820,44.4 L840,44.8 L860,45.0 L880,45.0 L900,44.9 L920,44.6 L940,44.2 L960,43.6 L980,42.9 L1000,42.2 L1020,41.3 L1040,40.4 L1060,39.6 L1080,38.7 L1100,37.8 L1120,37.1 L1140,36.4 L1160,35.8 L1180,35.4 L1200,35.1 L1220,35.0 L1240,35.0 L1260,35.2 L1280,35.6 L1300,36.1 L1320,36.7 L1340,37.4 L1360,38.2 L1380,39.1 L1400,40.0 L1420,40.9 L1440,41.8 L1460,42.6 L1480,43.3 L1500,43.9 L1520,44.4 L1540,44.8 L1560,45.0 L1580,45.0 L1600,44.9 L1620,44.6 L1640,44.2 L1660,43.6 L1680,42.9 L1700,42.2 L1720,41.3 L1740,40.4 L1760,39.6 L1780,38.7 L1800,37.8 L1820,37.1 L1840,36.4 L1860,35.8 L1880,35.4 L1900,35.1 L1920,35.0 L1940,35.0 L1960,35.2 L1980,35.6 L2000,36.1 L2020,36.7 L2040,37.4 L2060,38.2 L2080,39.1 L2100,40.0 L2120,40.9 L2140,41.8 L2160,42.6 L2180,43.3 L2200,43.9 L2220,44.4 L2240,44.8 L2260,45.0 L2280,45.0 L2300,44.9 L2320,44.6 L2340,44.2 L2360,43.6 L2380,42.9 L2400,42.2 L2420,41.3 L2440,40.4 L2460,39.6 L2480,38.7 L2500,37.8 L2520,37.1 L2540,36.4 L2560,35.8 L2580,35.4 L2600,35.1 L2620,35.0 L2640,35.0 L2660,35.2 L2680,35.6 L2700,36.1 L2720,36.7 L2740,37.4 L2760,38.2 L2780,39.1 L2800,40.0 L2800,140 L0,140 Z" fill="var(--wave1)"></path>
+  </svg>
+  <svg class="wave-l2" viewBox="0 0 2800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,64.0 L20,63.9 L40,63.6 L60,63.2 L80,62.5 L100,61.7 L120,60.8 L140,59.9 L160,58.8 L180,57.7 L200,56.7 L220,55.6 L240,54.7 L260,53.9 L280,53.1 L300,52.6 L320,52.2 L340,52.0 L360,52.0 L380,52.2 L400,52.6 L420,53.1 L440,53.9 L460,54.7 L480,55.6 L500,56.7 L520,57.7 L540,58.8 L560,59.9 L580,60.8 L600,61.7 L620,62.5 L640,63.2 L660,63.6 L680,63.9 L700,64.0 L720,63.9 L740,63.6 L760,63.2 L780,62.5 L800,61.7 L820,60.8 L840,59.9 L860,58.8 L880,57.7 L900,56.7 L920,55.6 L940,54.7 L960,53.9 L980,53.1 L1000,52.6 L1020,52.2 L1040,52.0 L1060,52.0 L1080,52.2 L1100,52.6 L1120,53.1 L1140,53.9 L1160,54.7 L1180,55.6 L1200,56.7 L1220,57.7 L1240,58.8 L1260,59.9 L1280,60.8 L1300,61.7 L1320,62.5 L1340,63.2 L1360,63.6 L1380,63.9 L1400,64.0 L1420,63.9 L1440,63.6 L1460,63.2 L1480,62.5 L1500,61.7 L1520,60.8 L1540,59.9 L1560,58.8 L1580,57.7 L1600,56.7 L1620,55.6 L1640,54.7 L1660,53.9 L1680,53.1 L1700,52.6 L1720,52.2 L1740,52.0 L1760,52.0 L1780,52.2 L1800,52.6 L1820,53.1 L1840,53.9 L1860,54.7 L1880,55.6 L1900,56.7 L1920,57.7 L1940,58.8 L1960,59.9 L1980,60.8 L2000,61.7 L2020,62.5 L2040,63.2 L2060,63.6 L2080,63.9 L2100,64.0 L2120,63.9 L2140,63.6 L2160,63.2 L2180,62.5 L2200,61.7 L2220,60.8 L2240,59.9 L2260,58.8 L2280,57.7 L2300,56.7 L2320,55.6 L2340,54.7 L2360,53.9 L2380,53.1 L2400,52.6 L2420,52.2 L2440,52.0 L2460,52.0 L2480,52.2 L2500,52.6 L2520,53.1 L2540,53.9 L2560,54.7 L2580,55.6 L2600,56.7 L2620,57.7 L2640,58.8 L2660,59.9 L2680,60.8 L2700,61.7 L2720,62.5 L2740,63.2 L2760,63.6 L2780,63.9 L2800,64.0 L2800,140 L0,140 Z" fill="var(--wave2)"></path>
+  </svg>
+  <svg class="wave-l3" viewBox="0 0 2800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,76.0 L20,74.8 L40,73.5 L60,72.4 L80,71.4 L100,70.5 L120,69.8 L140,69.3 L160,69.1 L180,69.0 L200,69.2 L220,69.6 L240,70.2 L260,70.9 L280,71.9 L300,73.0 L320,74.1 L340,75.4 L360,76.6 L380,77.9 L400,79.0 L420,80.1 L440,81.1 L460,81.8 L480,82.4 L500,82.8 L520,83.0 L540,82.9 L560,82.7 L580,82.2 L600,81.5 L620,80.6 L640,79.6 L660,78.5 L680,77.2 L700,76.0 L720,74.8 L740,73.5 L760,72.4 L780,71.4 L800,70.5 L820,69.8 L840,69.3 L860,69.1 L880,69.0 L900,69.2 L920,69.6 L940,70.2 L960,70.9 L980,71.9 L1000,73.0 L1020,74.1 L1040,75.4 L1060,76.6 L1080,77.9 L1100,79.0 L1120,80.1 L1140,81.1 L1160,81.8 L1180,82.4 L1200,82.8 L1220,83.0 L1240,82.9 L1260,82.7 L1280,82.2 L1300,81.5 L1320,80.6 L1340,79.6 L1360,78.5 L1380,77.2 L1400,76.0 L1420,74.8 L1440,73.5 L1460,72.4 L1480,71.4 L1500,70.5 L1520,69.8 L1540,69.3 L1560,69.1 L1580,69.0 L1600,69.2 L1620,69.6 L1640,70.2 L1660,70.9 L1680,71.9 L1700,73.0 L1720,74.1 L1740,75.4 L1760,76.6 L1780,77.9 L1800,79.0 L1820,80.1 L1840,81.1 L1860,81.8 L1880,82.4 L1900,82.8 L1920,83.0 L1940,82.9 L1960,82.7 L1980,82.2 L2000,81.5 L2020,80.6 L2040,79.6 L2060,78.5 L2080,77.2 L2100,76.0 L2120,74.8 L2140,73.5 L2160,72.4 L2180,71.4 L2200,70.5 L2220,69.8 L2240,69.3 L2260,69.1 L2280,69.0 L2300,69.2 L2320,69.6 L2340,70.2 L2360,70.9 L2380,71.9 L2400,73.0 L2420,74.1 L2440,75.4 L2460,76.6 L2480,77.9 L2500,79.0 L2520,80.1 L2540,81.1 L2560,81.8 L2580,82.4 L2600,82.8 L2620,83.0 L2640,82.9 L2660,82.7 L2680,82.2 L2700,81.5 L2720,80.6 L2740,79.6 L2760,78.5 L2780,77.2 L2800,76.0 L2800,140 L0,140 Z" fill="var(--wave3)"></path>
+  </svg>
+  <div class="wave-clock">
+    <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="64" cy="64" r="60" fill="#ffffff" stroke="#1e1b7a" stroke-width="5"/>
+      <circle cx="64" cy="64" r="60" fill="none" stroke="#23c6d6" stroke-width="2" opacity="0.5"/>
+      <g stroke="#1e1b7a" stroke-width="2.5" stroke-linecap="round">
+        <line x1="64" y1="12" x2="64" y2="20"/>
+        <line x1="64" y1="108" x2="64" y2="116"/>
+        <line x1="12" y1="64" x2="20" y2="64"/>
+        <line x1="108" y1="64" x2="116" y2="64"/>
+      </g>
+      <line x1="64" y1="64" x2="64" y2="34" stroke="#1e1b7a" stroke-width="4" stroke-linecap="round"/>
+      <line x1="64" y1="64" x2="88" y2="64" stroke="#f2894a" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="64" cy="64" r="4.5" fill="#1e1b7a"/>
+    </svg>
+    <img src="logo-original.png" alt="Surprise">
+  </div>
 </div>
 
 <script src="jalali.js"></script>
 <script src="app.js"></script>
-
-<div class="wave-wrap">
-  <svg class="wave-back" viewBox="0 0 2800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0,55 L20,56.1 L40,57.1 L60,58.1 L80,58.9 L100,59.7 L120,60.3 L140,60.7 L160,60.9 L180,61.0 L200,60.8 L220,60.5 L240,60.0 L260,59.3 L280,58.5 L300,57.6 L320,56.6 L340,55.5 L360,54.5 L380,53.4 L400,52.4 L420,51.5 L440,50.7 L460,50.0 L480,49.5 L500,49.2 L520,49.0 L540,49.1 L560,49.3 L580,49.7 L600,50.3 L620,51.1 L640,51.9 L660,52.9 L680,53.9 L700,55.0 L720,56.1 L740,57.1 L760,58.1 L780,58.9 L800,59.7 L820,60.3 L840,60.7 L860,60.9 L880,61.0 L900,60.8 L920,60.5 L940,60.0 L960,59.3 L980,58.5 L1000,57.6 L1020,56.6 L1040,55.5 L1060,54.5 L1080,53.4 L1100,52.4 L1120,51.5 L1140,50.7 L1160,50.0 L1180,49.5 L1200,49.2 L1220,49.0 L1240,49.1 L1260,49.3 L1280,49.7 L1300,50.3 L1320,51.1 L1340,51.9 L1360,52.9 L1380,53.9 L1400,55.0 L1420,56.1 L1440,57.1 L1460,58.1 L1480,58.9 L1500,59.7 L1520,60.3 L1540,60.7 L1560,60.9 L1580,61.0 L1600,60.8 L1620,60.5 L1640,60.0 L1660,59.3 L1680,58.5 L1700,57.6 L1720,56.6 L1740,55.5 L1760,54.5 L1780,53.4 L1800,52.4 L1820,51.5 L1840,50.7 L1860,50.0 L1880,49.5 L1900,49.2 L1920,49.0 L1940,49.1 L1960,49.3 L1980,49.7 L2000,50.3 L2020,51.1 L2040,51.9 L2060,52.9 L2080,53.9 L2100,55.0 L2120,56.1 L2140,57.1 L2160,58.1 L2180,58.9 L2200,59.7 L2220,60.3 L2240,60.7 L2260,60.9 L2280,61.0 L2300,60.8 L2320,60.5 L2340,60.0 L2360,59.3 L2380,58.5 L2400,57.6 L2420,56.6 L2440,55.5 L2460,54.5 L2480,53.4 L2500,52.4 L2520,51.5 L2540,50.7 L2560,50.0 L2580,49.5 L2600,49.2 L2620,49.0 L2640,49.1 L2660,49.3 L2680,49.7 L2700,50.3 L2720,51.1 L2740,51.9 L2760,52.9 L2780,53.9 L2800,55.0 L2800,140 L0,140 Z" fill="#7fe0ea"></path>
-  </svg>
-  <svg class="wave-front" viewBox="0 0 2800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0,68.0 L20,66.8 L40,65.5 L60,64.4 L80,63.4 L100,62.5 L120,61.8 L140,61.3 L160,61.1 L180,61.0 L200,61.2 L220,61.6 L240,62.2 L260,62.9 L280,63.9 L300,65.0 L320,66.1 L340,67.4 L360,68.6 L380,69.9 L400,71.0 L420,72.1 L440,73.1 L460,73.8 L480,74.4 L500,74.8 L520,75.0 L540,74.9 L560,74.7 L580,74.2 L600,73.5 L620,72.6 L640,71.6 L660,70.5 L680,69.2 L700,68.0 L720,66.8 L740,65.5 L760,64.4 L780,63.4 L800,62.5 L820,61.8 L840,61.3 L860,61.1 L880,61.0 L900,61.2 L920,61.6 L940,62.2 L960,62.9 L980,63.9 L1000,65.0 L1020,66.1 L1040,67.4 L1060,68.6 L1080,69.9 L1100,71.0 L1120,72.1 L1140,73.1 L1160,73.8 L1180,74.4 L1200,74.8 L1220,75.0 L1240,74.9 L1260,74.7 L1280,74.2 L1300,73.5 L1320,72.6 L1340,71.6 L1360,70.5 L1380,69.2 L1400,68.0 L1420,66.8 L1440,65.5 L1460,64.4 L1480,63.4 L1500,62.5 L1520,61.8 L1540,61.3 L1560,61.1 L1580,61.0 L1600,61.2 L1620,61.6 L1640,62.2 L1660,62.9 L1680,63.9 L1700,65.0 L1720,66.1 L1740,67.4 L1760,68.6 L1780,69.9 L1800,71.0 L1820,72.1 L1840,73.1 L1860,73.8 L1880,74.4 L1900,74.8 L1920,75.0 L1940,74.9 L1960,74.7 L1980,74.2 L2000,73.5 L2020,72.6 L2040,71.6 L2060,70.5 L2080,69.2 L2100,68.0 L2120,66.8 L2140,65.5 L2160,64.4 L2180,63.4 L2200,62.5 L2220,61.8 L2240,61.3 L2260,61.1 L2280,61.0 L2300,61.2 L2320,61.6 L2340,62.2 L2360,62.9 L2380,63.9 L2400,65.0 L2420,66.1 L2440,67.4 L2460,68.6 L2480,69.9 L2500,71.0 L2520,72.1 L2540,73.1 L2560,73.8 L2580,74.4 L2600,74.8 L2620,75.0 L2640,74.9 L2660,74.7 L2680,74.2 L2700,73.5 L2720,72.6 L2740,71.6 L2760,70.5 L2780,69.2 L2800,68.0 L2800,140 L0,140 Z" fill="#23c6d6"></path>
-  </svg>
-  <div class="wave-logo"><img src="logo-original.png" alt="Surprise"></div>
-</div>
-
 </body>
 </html>
