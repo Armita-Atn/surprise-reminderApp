@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yaadaavar-v2';
+const CACHE_NAME = 'yaadaavar-v3';
 const ASSETS = [
   './index.html',
   './app.js',
