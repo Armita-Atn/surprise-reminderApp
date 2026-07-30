@@ -17,43 +17,75 @@ function authHeaders(extra) {
   return Object.assign({ 'Authorization': 'Bearer ' + getToken() }, extra || {});
 }
 
-const loginScreen = document.getElementById('loginScreen');
+const authScreen = document.getElementById('authScreen');
 const appScreen = document.getElementById('appScreen');
-const loginPassword = document.getElementById('loginPassword');
-const loginBtn = document.getElementById('loginBtn');
-const loginError = document.getElementById('loginError');
+const authUsername = document.getElementById('authUsername');
+const authPassword = document.getElementById('authPassword');
+const authBtn = document.getElementById('authBtn');
+const authError = document.getElementById('authError');
+const tabLogin = document.getElementById('tabLogin');
+const tabSignup = document.getElementById('tabSignup');
 
-function showLogin() {
+let authMode = 'login'; // یا 'signup'
+
+function setAuthMode(mode) {
+  authMode = mode;
+  authError.style.display = 'none';
+  if (mode === 'login') {
+    tabLogin.classList.add('active');
+    tabSignup.classList.remove('active');
+    authBtn.textContent = 'ورود';
+  } else {
+    tabSignup.classList.add('active');
+    tabLogin.classList.remove('active');
+    authBtn.textContent = 'ثبت‌نام';
+  }
+}
+tabLogin.addEventListener('click', () => setAuthMode('login'));
+tabSignup.addEventListener('click', () => setAuthMode('signup'));
+
+function showAuth() {
   clearToken();
-  loginScreen.style.display = 'flex';
+  authScreen.style.display = 'flex';
   appScreen.style.display = 'none';
 }
 
 function showApp() {
-  loginScreen.style.display = 'none';
+  authScreen.style.display = 'none';
   appScreen.style.display = 'block';
   initApp();
 }
 
-loginBtn.addEventListener('click', async () => {
-  const password = loginPassword.value;
-  loginError.style.display = 'none';
+authBtn.addEventListener('click', async () => {
+  const username = authUsername.value.trim();
+  const password = authPassword.value;
+  authError.style.display = 'none';
+
+  if (!username || !password) {
+    authError.textContent = 'نام کاربری و رمز عبور رو وارد کن';
+    authError.style.display = 'block';
+    return;
+  }
+
+  const endpoint = authMode === 'login' ? 'login' : 'signup';
+
   try {
-    const res = await fetch(`${API_URL}/login`, {
+    const res = await fetch(`${API_URL}/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password })
+      body: JSON.stringify({ username, password })
     });
+    const data = await res.json();
     if (!res.ok) {
-      loginError.style.display = 'block';
+      authError.textContent = data.error || 'خطایی رخ داد';
+      authError.style.display = 'block';
       return;
     }
-    const data = await res.json();
     setToken(data.token);
     showApp();
   } catch (err) {
-    loginError.textContent = 'اتصال به سرور برقرار نشد';
-    loginError.style.display = 'block';
+    authError.textContent = 'اتصال به سرور برقرار نشد';
+    authError.style.display = 'block';
   }
 });
 
@@ -61,7 +93,7 @@ loginBtn.addEventListener('click', async () => {
 if (getToken()) {
   showApp();
 } else {
-  showLogin();
+  showAuth();
 }
 
 // ================================
@@ -173,7 +205,7 @@ function initApp() {
         headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ name, startDate: startDateIso, dueDate: dueDateIso, amount: amount ? Number(amount) : null })
       });
-      if (res.status === 401) { showLogin(); return; }
+      if (res.status === 401) { showAuth(); return; }
       if (!res.ok) throw new Error('خطا در ثبت');
       document.getElementById('custName').value = '';
       document.getElementById('custAmount').value = '';
@@ -193,7 +225,7 @@ async function loadCustomers() {
   const listEl = document.getElementById('customerList');
   try {
     const res = await fetch(`${API_URL}/customers`, { headers: authHeaders() });
-    if (res.status === 401) { showLogin(); return; }
+    if (res.status === 401) { showAuth(); return; }
     const customers = await res.json();
 
     if (customers.length === 0) {
@@ -229,7 +261,7 @@ async function loadCustomers() {
 async function deleteCustomer(id) {
   if (!confirm('این مشتری حذف بشه؟')) return;
   const res = await fetch(`${API_URL}/customers/${id}`, { method: 'DELETE', headers: authHeaders() });
-  if (res.status === 401) { showLogin(); return; }
+  if (res.status === 401) { showAuth(); return; }
   loadCustomers();
 }
 
