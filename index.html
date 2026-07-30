@@ -15,7 +15,7 @@
     --navy-light: #2f2ba3;
     --cyan: #23c6d6;
     --orange: #f2894a;
-    --bg: #f5f6fb;
+    --bg: #e7ecf5;
     --card: #ffffff;
     --text: #1c1c28;
     --muted: #8a8c9e;
@@ -120,11 +120,12 @@
   }
   .auth-card {
     width: 100%; max-width: 320px;
-    background: rgba(255,255,255,0.9);
+    background: #ffffff;
+    border: 1px solid #dfe3f0;
     border-radius: 18px;
     padding: 22px;
     padding-top: 40px;
-    box-shadow: 0 8px 24px rgba(20,20,60,0.08);
+    box-shadow: 0 14px 34px rgba(20,20,60,0.16);
     position: relative;
   }
   .card-badge {
@@ -192,9 +193,9 @@
     width: 200%;
     height: 60%;
   }
-  .wave-l1 { animation: wave-move 20s linear infinite; opacity: 0.55; }
+  .wave-l1 { animation: wave-move 30s linear infinite; opacity: 0.55; }
   .wave-l2 { animation: wave-move 20s linear infinite; opacity: 0.75; }
-  .wave-l3 { animation: wave-move 20s linear infinite; opacity: 0.95; }
+  .wave-l3 { animation: wave-move 13s linear infinite; opacity: 0.95; }
   @keyframes wave-move {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
