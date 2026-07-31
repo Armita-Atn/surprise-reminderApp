@@ -95,23 +95,31 @@
   .side-menu-item:hover { background: #f5f7fb; }
   #sideLogoutBtn { color: var(--danger); }
 
+  #pagePayment {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 60;
+    overflow-y: auto;
+  }
+
   #edgeHandle {
     position: fixed;
-    top: 0;
+    top: 50%;
     left: 0;
-    width: 22px;
-    height: 100vh;
+    width: 26px;
+    height: 90px;
+    transform: translateY(-50%);
     z-index: 45;
     display: flex;
     align-items: center;
     touch-action: pan-y;
   }
   #edgeHandleBar {
-    width: 5px;
+    width: 6px;
     height: 60px;
     background: rgba(30,27,122,0.28);
     border-radius: 0 6px 6px 0;
-    margin-inline-start: 0;
     transition: background 0.2s;
   }
   #edgeHandle:active #edgeHandleBar { background: rgba(30,27,122,0.5); }
@@ -336,6 +344,10 @@
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
     لیست مشتریان
   </button>
+  <button class="side-menu-item" data-page="report">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    گزارش نقدینگی
+  </button>
   <div style="flex:1;"></div>
   <button class="side-menu-item" id="sideLogoutBtn">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -349,7 +361,7 @@
   <img src="logo-original.png" alt="Surprise">
 </header>
 
-<main>
+<main id="pageList">
 
   <div id="notifBanner" class="notif-banner" style="display:none;">
     <span id="notifText"></span>
@@ -383,6 +395,52 @@
   </div>
 
 </main>
+
+<main id="pageReport" style="display:none;">
+  <div class="card">
+    <h2>گزارش نقدینگی</h2>
+    <label>از تاریخ سررسید (شمسی)</label>
+    <div class="date-row">
+      <select id="repFromYear"></select>
+      <select id="repFromMonth"></select>
+      <select id="repFromDay"></select>
+    </div>
+    <label>تا تاریخ سررسید (شمسی)</label>
+    <div class="date-row">
+      <select id="repToYear"></select>
+      <select id="repToMonth"></select>
+      <select id="repToDay"></select>
+    </div>
+    <button class="btn-primary" id="repCalcBtn">محاسبه</button>
+  </div>
+
+  <div class="card" id="repResultCard" style="display:none;">
+    <h2>نتیجه</h2>
+    <div id="repResult"></div>
+  </div>
+</main>
+
+<div id="pagePayment" style="display:none;">
+  <div style="padding:16px; max-width:480px; margin:0 auto;">
+    <button class="side-menu-item" id="paymentBackBtn" style="margin-bottom:12px; background:#eef0f8;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      بازگشت
+    </button>
+    <div class="card">
+      <h2 id="paymentCustName"></h2>
+      <label>مبلغ دریافتی (ریال)</label>
+      <input type="text" inputmode="numeric" id="paymentAmount">
+      <label>تاریخ دریافت (شمسی)</label>
+      <div class="date-row">
+        <select id="payYear"></select>
+        <select id="payMonth"></select>
+        <select id="payDay"></select>
+      </div>
+      <button class="btn-primary" id="confirmPayBtn">ثبت دریافت</button>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script src="jalali.js"></script>
