@@ -107,22 +107,83 @@ function initApp() {
 
   const sideMenu = document.getElementById('sideMenu');
   const sideMenuOverlay = document.getElementById('sideMenuOverlay');
-  const menuBtn = document.getElementById('menuBtn');
+  const edgeHandle = document.getElementById('edgeHandle');
 
   function openMenu() {
-    sideMenu.classList.add('open');
-    sideMenuOverlay.classList.add('open');
+    if (sideMenu) sideMenu.classList.add('open');
+    if (sideMenuOverlay) sideMenuOverlay.classList.add('open');
   }
   function closeMenu() {
-    sideMenu.classList.remove('open');
-    sideMenuOverlay.classList.remove('open');
+    if (sideMenu) sideMenu.classList.remove('open');
+    if (sideMenuOverlay) sideMenuOverlay.classList.remove('open');
   }
-  menuBtn.addEventListener('click', openMenu);
-  sideMenuOverlay.addEventListener('click', closeMenu);
 
-  document.getElementById('sideLogoutBtn').addEventListener('click', () => {
-    closeMenu();
-    showAuth();
+  if (sideMenuOverlay) sideMenuOverlay.addEventListener('click', closeMenu);
+
+  const sideLogoutBtn = document.getElementById('sideLogoutBtn');
+  if (sideLogoutBtn) {
+    sideLogoutBtn.addEventListener('click', () => {
+      closeMenu();
+      showAuth();
+    });
+  }
+
+  // ---------- کشیدن از لبه‌ی صفحه برای باز کردن منو (مثل آیفون) ----------
+  if (edgeHandle && sideMenu) {
+    const menuWidth = 230;
+    let dragging = false;
+    let startX = 0;
+    let currentX = 0;
+
+    function setMenuX(x) {
+      const clamped = Math.max(-menuWidth, Math.min(0, x));
+      sideMenu.style.transition = 'none';
+      sideMenu.style.transform = `translateX(${clamped}px)`;
+      if (sideMenuOverlay) sideMenuOverlay.style.opacity = String((clamped + menuWidth) / menuWidth * 0.4);
+      if (sideMenuOverlay) sideMenuOverlay.style.pointerEvents = clamped > -menuWidth ? 'auto' : 'none';
+    }
+
+    function endDrag(finalX) {
+      sideMenu.style.transition = '';
+      sideMenu.style.transform = '';
+      if (sideMenuOverlay) { sideMenuOverlay.style.opacity = ''; sideMenuOverlay.style.pointerEvents = ''; }
+      if (finalX > -menuWidth / 2) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    }
+
+    edgeHandle.addEventListener('touchstart', (e) => {
+      dragging = true;
+      startX = e.touches[0].clientX;
+      currentX = -menuWidth;
+    }, { passive: true });
+
+    edgeHandle.addEventListener('touchmove', (e) => {
+      if (!dragging) return;
+      const dx = e.touches[0].clientX - startX;
+      currentX = -menuWidth + dx;
+      setMenuX(currentX);
+    }, { passive: true });
+
+    edgeHandle.addEventListener('touchend', () => {
+      if (!dragging) return;
+      dragging = false;
+      endDrag(currentX);
+    });
+
+    // برای موس (تست روی کامپیوتر) هم پشتیبانی می‌کنیم
+    edgeHandle.addEventListener('click', () => {
+      if (sideMenu.classList.contains('open')) closeMenu(); else openMenu();
+    });
+  }
+
+  // ---------- فرمت جداکننده‌ی هزارگان برای مبلغ ----------
+  const custAmountEl = document.getElementById('custAmount');
+  custAmountEl.addEventListener('input', () => {
+    const digitsOnly = custAmountEl.value.replace(/[^\d]/g, '');
+    custAmountEl.value = digitsOnly ? Number(digitsOnly).toLocaleString('en-US') : '';
   });
 
   // ---------- ساخت سلکت‌های تاریخ شمسی ----------
@@ -158,7 +219,7 @@ function initApp() {
   // ---------- افزودن مشتری ----------
   document.getElementById('addBtn').addEventListener('click', async () => {
     const name = document.getElementById('custName').value.trim();
-    const amount = document.getElementById('custAmount').value;
+    const amount = document.getElementById('custAmount').value.replace(/,/g, '');
     const graceDays = Number(document.getElementById('graceDays').value) || 25;
     const jy = Number(yearSel.value), jm = Number(monthSel.value), jd = Number(daySel.value);
 
