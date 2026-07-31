@@ -48,11 +48,15 @@ function showAuth() {
   clearToken();
   authScreen.style.display = 'flex';
   appScreen.style.display = 'none';
+  const wave = document.querySelector('.wave-wrap');
+  if (wave) wave.style.display = 'block';
 }
 
 function showApp() {
   authScreen.style.display = 'none';
   appScreen.style.display = 'block';
+  const wave = document.querySelector('.wave-wrap');
+  if (wave) wave.style.display = 'none';
   initApp();
 }
 
