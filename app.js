@@ -105,7 +105,23 @@ function initApp() {
   if (appInitialized) { loadCustomers(); return; }
   appInitialized = true;
 
-  document.getElementById('logoutBtn').addEventListener('click', () => {
+  const sideMenu = document.getElementById('sideMenu');
+  const sideMenuOverlay = document.getElementById('sideMenuOverlay');
+  const menuBtn = document.getElementById('menuBtn');
+
+  function openMenu() {
+    sideMenu.classList.add('open');
+    sideMenuOverlay.classList.add('open');
+  }
+  function closeMenu() {
+    sideMenu.classList.remove('open');
+    sideMenuOverlay.classList.remove('open');
+  }
+  menuBtn.addEventListener('click', openMenu);
+  sideMenuOverlay.addEventListener('click', closeMenu);
+
+  document.getElementById('sideLogoutBtn').addEventListener('click', () => {
+    closeMenu();
     showAuth();
   });
 
