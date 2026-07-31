@@ -171,7 +171,7 @@ function initApp() {
   try {
     const sideMenu = document.getElementById('sideMenu');
     const sideMenuOverlay = document.getElementById('sideMenuOverlay');
-    const edgeHandle = document.getElementById('edgeHandle');
+    const menuFab = document.getElementById('menuFab');
 
     function openMenu() {
       if (sideMenu) sideMenu.classList.add('open');
@@ -183,6 +183,12 @@ function initApp() {
     }
 
     if (sideMenuOverlay) sideMenuOverlay.addEventListener('click', closeMenu);
+
+    if (menuFab) {
+      menuFab.addEventListener('click', () => {
+        if (sideMenu && sideMenu.classList.contains('open')) closeMenu(); else openMenu();
+      });
+    }
 
     const sideLogoutBtn = document.getElementById('sideLogoutBtn');
     if (sideLogoutBtn) {
@@ -196,56 +202,6 @@ function initApp() {
     const navReportBtn = document.querySelector('[data-page="report"]');
     if (navListBtn) navListBtn.addEventListener('click', () => { closeMenu(); showPage('list'); });
     if (navReportBtn) navReportBtn.addEventListener('click', () => { closeMenu(); showPage('report'); });
-
-    // ---------- کشیدن از لبه‌ی صفحه برای باز کردن منو (مثل آیفون) ----------
-    if (edgeHandle && sideMenu) {
-      const menuWidth = 230;
-      let dragging = false;
-      let startX = 0;
-      let currentX = 0;
-
-      function setMenuX(x) {
-        const clamped = Math.max(-menuWidth, Math.min(0, x));
-        sideMenu.style.transition = 'none';
-        sideMenu.style.transform = `translateX(${clamped}px)`;
-        if (sideMenuOverlay) sideMenuOverlay.style.opacity = String((clamped + menuWidth) / menuWidth * 0.4);
-        if (sideMenuOverlay) sideMenuOverlay.style.pointerEvents = clamped > -menuWidth ? 'auto' : 'none';
-      }
-
-      function endDrag(finalX) {
-        sideMenu.style.transition = '';
-        sideMenu.style.transform = '';
-        if (sideMenuOverlay) { sideMenuOverlay.style.opacity = ''; sideMenuOverlay.style.pointerEvents = ''; }
-        if (finalX > -menuWidth / 2) {
-          openMenu();
-        } else {
-          closeMenu();
-        }
-      }
-
-      edgeHandle.addEventListener('touchstart', (e) => {
-        dragging = true;
-        startX = e.touches[0].clientX;
-        currentX = -menuWidth;
-      }, { passive: true });
-
-      edgeHandle.addEventListener('touchmove', (e) => {
-        if (!dragging) return;
-        const dx = e.touches[0].clientX - startX;
-        currentX = -menuWidth + dx;
-        setMenuX(currentX);
-      }, { passive: true });
-
-      edgeHandle.addEventListener('touchend', () => {
-        if (!dragging) return;
-        dragging = false;
-        endDrag(currentX);
-      });
-
-      edgeHandle.addEventListener('click', () => {
-        if (sideMenu.classList.contains('open')) closeMenu(); else openMenu();
-      });
-    }
   } catch (err) {
     console.error('خطا در راه‌اندازی منو:', err);
   }
