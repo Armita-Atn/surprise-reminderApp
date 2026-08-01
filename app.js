@@ -297,12 +297,26 @@ function initApp() {
       const resultEl = document.getElementById('repResult');
       resultCard.style.display = 'block';
       resultEl.innerHTML = `
-        <div class="customer-item"><div class="info"><div class="name">تعداد مشتری در این بازه</div></div><span class="badge ok">${data.count}</span></div>
+        <div class="customer-item"><div class="info"><div class="name">تعداد مشتری واردشده در این بازه</div></div><span class="badge ok">${data.count}</span></div>
         <div class="customer-item"><div class="info"><div class="name">تعداد وصول‌شده</div></div><span class="badge ok">${data.paidCount}</span></div>
         <div class="customer-item"><div class="info"><div class="name">مجموع تعهد وصولی</div></div><span class="badge warn">${Number(data.totalPromised).toLocaleString('fa-IR')} ریال</span></div>
         <div class="customer-item"><div class="info"><div class="name">مجموع وصولی</div></div><span class="badge ok">${Number(data.totalPaid).toLocaleString('fa-IR')} ریال</span></div>
         <div class="customer-item"><div class="info"><div class="name">درصد وصول</div></div><span class="badge ${data.percentage >= 80 ? 'ok' : data.percentage >= 40 ? 'warn' : 'danger'}">${data.percentage}%</span></div>
       `;
+
+      const breakdownEl = document.getElementById('repByCustomer');
+      if (breakdownEl) {
+        if (data.byCustomer && data.byCustomer.length > 0) {
+          breakdownEl.innerHTML = '<h2 style="margin-top:16px;">دریافتی‌ها به تفکیک مشتری</h2>' + data.byCustomer.map(c => `
+            <div class="customer-item">
+              <div class="info"><div class="name">${escapeHtml(c.name)}</div>
+              <div class="meta">${c.payments.length} فقره دریافت</div></div>
+              <span class="badge ok">${Number(c.amount).toLocaleString('fa-IR')} ریال</span>
+            </div>`).join('');
+        } else {
+          breakdownEl.innerHTML = '';
+        }
+      }
 
       if (typeof Chart !== 'undefined') {
         const ctx = document.getElementById('repChart');
@@ -346,7 +360,7 @@ function initApp() {
     const summaryRows = [
       { 'شاخص': 'از تاریخ', 'مقدار': JalaliCalendar.isoToJalaliDisplay(fromIso) },
       { 'شاخص': 'تا تاریخ', 'مقدار': JalaliCalendar.isoToJalaliDisplay(toIso) },
-      { 'شاخص': 'تعداد مشتری در این بازه', 'مقدار': data.count },
+      { 'شاخص': 'تعداد مشتری واردشده در این بازه', 'مقدار': data.count },
       { 'شاخص': 'تعداد وصول‌شده', 'مقدار': data.paidCount },
       { 'شاخص': 'مجموع تعهد وصولی (ریال)', 'مقدار': data.totalPromised },
       { 'شاخص': 'مجموع وصولی (ریال)', 'مقدار': data.totalPaid },
