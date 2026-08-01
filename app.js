@@ -69,8 +69,22 @@ function openPaymentPage(id) {
 
   const pagePayment = document.getElementById('pagePayment');
   pagePayment.dataset.customerId = id;
+  const remaining = (Number(customer.amount) || 0) - (Number(customer.totalPaid) || 0);
   document.getElementById('paymentCustName').textContent = customer.name;
-  document.getElementById('paymentAmount').value = customer.amount ? Number(customer.amount).toLocaleString('en-US') : '';
+  document.getElementById('paymentAmount').value = remaining > 0 ? remaining.toLocaleString('en-US') : '';
+
+  const historyEl = document.getElementById('paymentHistory');
+  if (historyEl) {
+    if (customer.payments && customer.payments.length > 0) {
+      historyEl.innerHTML = '<label>دریافت‌های قبلی</label>' + customer.payments.map((p, i) => `
+        <div class="customer-item">
+          <div class="info"><div class="name">${Number(p.amount).toLocaleString('fa-IR')} ریال</div>
+          <div class="meta">${JalaliCalendar.isoToJalaliDisplay(p.date)}</div></div>
+        </div>`).join('');
+    } else {
+      historyEl.innerHTML = '';
+    }
+  }
 
   const today = new Date();
   const todayJ = JalaliCalendar.toJalali(today.getFullYear(), today.getMonth() + 1, today.getDate());
@@ -278,19 +292,96 @@ function initApp() {
       const res = await fetch(`${API_URL}/report?from=${fromIso}&to=${toIso}`, { headers: authHeaders() });
       if (res.status === 401) { showAuth(); return; }
       const data = await res.json();
+      lastReport = { data, fromIso, toIso };
       const resultCard = document.getElementById('repResultCard');
       const resultEl = document.getElementById('repResult');
       resultCard.style.display = 'block';
       resultEl.innerHTML = `
         <div class="customer-item"><div class="info"><div class="name">تعداد مشتری در این بازه</div></div><span class="badge ok">${data.count}</span></div>
-        <div class="customer-item"><div class="info"><div class="name">تعداد دریافت‌شده</div></div><span class="badge ok">${data.paidCount}</span></div>
-        <div class="customer-item"><div class="info"><div class="name">مجموع قول‌داده‌شده</div></div><span class="badge warn">${Number(data.totalPromised).toLocaleString('fa-IR')} ریال</span></div>
-        <div class="customer-item"><div class="info"><div class="name">مجموع دریافت‌شده</div></div><span class="badge ok">${Number(data.totalPaid).toLocaleString('fa-IR')} ریال</span></div>
+        <div class="customer-item"><div class="info"><div class="name">تعداد وصول‌شده</div></div><span class="badge ok">${data.paidCount}</span></div>
+        <div class="customer-item"><div class="info"><div class="name">مجموع تعهد وصولی</div></div><span class="badge warn">${Number(data.totalPromised).toLocaleString('fa-IR')} ریال</span></div>
+        <div class="customer-item"><div class="info"><div class="name">مجموع وصولی</div></div><span class="badge ok">${Number(data.totalPaid).toLocaleString('fa-IR')} ریال</span></div>
         <div class="customer-item"><div class="info"><div class="name">درصد وصول</div></div><span class="badge ${data.percentage >= 80 ? 'ok' : data.percentage >= 40 ? 'warn' : 'danger'}">${data.percentage}%</span></div>
       `;
+
+      if (typeof Chart !== 'undefined') {
+        const ctx = document.getElementById('repChart');
+        if (repChartInstance) repChartInstance.destroy();
+        repChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['تعهد وصولی', 'وصولی'],
+            datasets: [{
+              label: 'مبلغ (ریال)',
+              data: [data.totalPromised, data.totalPaid],
+              backgroundColor: ['#f2a63c', '#2fb673'],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { callback: (v) => Number(v).toLocaleString('fa-IR') }
+              }
+            }
+          }
+        });
+      }
     } catch (err) {
       alert('اتصال به سرور برقرار نشد.');
     }
+  });
+
+  // ---------- دانلود اکسل گزارش ----------
+  document.getElementById('repExcelBtn').addEventListener('click', () => {
+    if (!lastReport || typeof XLSX === 'undefined') {
+      alert('اول محاسبه رو بزن');
+      return;
+    }
+    const { data, fromIso, toIso } = lastReport;
+    const summaryRows = [
+      { 'شاخص': 'از تاریخ', 'مقدار': JalaliCalendar.isoToJalaliDisplay(fromIso) },
+      { 'شاخص': 'تا تاریخ', 'مقدار': JalaliCalendar.isoToJalaliDisplay(toIso) },
+      { 'شاخص': 'تعداد مشتری در این بازه', 'مقدار': data.count },
+      { 'شاخص': 'تعداد وصول‌شده', 'مقدار': data.paidCount },
+      { 'شاخص': 'مجموع تعهد وصولی (ریال)', 'مقدار': data.totalPromised },
+      { 'شاخص': 'مجموع وصولی (ریال)', 'مقدار': data.totalPaid },
+      { 'شاخص': 'درصد وصول', 'مقدار': data.percentage + '%' }
+    ];
+
+    const detailRows = [];
+    lastCustomers.forEach(c => {
+      (c.payments || []).forEach(p => {
+        if (p.date >= fromIso && p.date <= toIso) {
+          detailRows.push({
+            'نام مشتری': c.name,
+            'مبلغ دریافتی (ریال)': p.amount,
+            'تاریخ دریافت': JalaliCalendar.isoToJalaliDisplay(p.date),
+            'ثبت‌شده توسط': c.ownerUsername || ''
+          });
+        }
+      });
+    });
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryRows), 'خلاصه');
+    if (detailRows.length > 0) {
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detailRows), 'جزئیات دریافت‌ها');
+    }
+    XLSX.writeFile(wb, `گزارش-نقدینگی-${fromIso}-${toIso}.xlsx`);
+  });
+
+  // ---------- دانلود PDF گزارش (از طریق چاپ مرورگر) ----------
+  document.getElementById('repPdfBtn').addEventListener('click', () => {
+    if (!lastReport) {
+      alert('اول محاسبه رو بزن');
+      return;
+    }
+    window.print();
   });
 
   // ---------- صفحه‌ی ثبت پرداخت ----------
@@ -301,6 +392,10 @@ function initApp() {
   document.getElementById('confirmPayBtn').addEventListener('click', async () => {
     const id = document.getElementById('pagePayment').dataset.customerId;
     const amount = document.getElementById('paymentAmount').value.replace(/,/g, '');
+    if (!amount || Number(amount) <= 0) {
+      alert('مبلغ دریافتی رو وارد کن');
+      return;
+    }
     const paidDateIso = JalaliCalendar.jalaliToIso(
       Number(document.getElementById('payYear').value),
       Number(document.getElementById('payMonth').value),
@@ -308,10 +403,10 @@ function initApp() {
     );
 
     try {
-      const res = await fetch(`${API_URL}/customers/${id}/pay`, {
-        method: 'PATCH',
+      const res = await fetch(`${API_URL}/customers/${id}/payments`, {
+        method: 'POST',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({ paidAmount: amount ? Number(amount) : null, paidDate: paidDateIso })
+        body: JSON.stringify({ amount: Number(amount), date: paidDateIso })
       });
       if (res.status === 401) { showAuth(); return; }
       if (!res.ok) throw new Error('خطا در ثبت پرداخت');
@@ -336,6 +431,8 @@ function initApp() {
 
 // ---------- نمایش لیست مشتری‌ها ----------
 let lastCustomers = [];
+let lastReport = null;
+let repChartInstance = null;
 
 async function loadCustomers() {
   const listEl = document.getElementById('customerList');
@@ -360,18 +457,30 @@ async function loadCustomers() {
       }
       const dueJalali = JalaliCalendar.isoToJalaliDisplay(c.dueDate);
       const amountText = c.amount ? `${Number(c.amount).toLocaleString('fa-IR')} ریال · ` : '';
-      const payAction = c.paid
-        ? `<span class="badge ok" title="دریافت شد">✓ دریافت شد</span>`
-        : `<button class="del-btn" style="color:var(--ok); font-size:12px; font-weight:600;" onclick="openPaymentPage('${c.id}')">ثبت دریافت</button>`;
+      const ownerText = c.ownerUsername ? ` · ثبت‌شده توسط ${escapeHtml(c.ownerUsername)}` : '';
+
+      let payAction = '';
+      if (c.payStatus === 'paid') {
+        payAction = `<span class="badge ok" title="دریافت کامل">✓ دریافت کامل</span>`;
+      } else if (c.payStatus === 'partial') {
+        const remain = (Number(c.amount) || 0) - (Number(c.totalPaid) || 0);
+        payAction = `<span class="badge warn" title="دریافت جزئی">${Number(c.totalPaid).toLocaleString('fa-IR')} از ${Number(c.amount).toLocaleString('fa-IR')}</span>`;
+        if (c.isMine) payAction += ` <button class="del-btn" style="color:var(--ok); font-size:12px; font-weight:600;" onclick="openPaymentPage('${c.id}')">ثبت دریافت بعدی</button>`;
+      } else if (c.isMine) {
+        payAction = `<button class="del-btn" style="color:var(--ok); font-size:12px; font-weight:600;" onclick="openPaymentPage('${c.id}')">ثبت دریافت</button>`;
+      }
+
+      const deleteAction = c.isMine ? `<button class="del-btn" onclick="deleteCustomer('${c.id}')">✕</button>` : '';
+
       return `
         <div class="customer-item">
           <div class="info">
             <div class="name">${escapeHtml(c.name)}</div>
-            <div class="meta">${amountText}سررسید: ${dueJalali}</div>
+            <div class="meta">${amountText}سررسید: ${dueJalali}${ownerText}</div>
           </div>
           <span class="badge ${badgeClass}">${badgeText}</span>
           ${payAction}
-          <button class="del-btn" onclick="deleteCustomer('${c.id}')">✕</button>
+          ${deleteAction}
         </div>`;
     }).join('');
   } catch (err) {
