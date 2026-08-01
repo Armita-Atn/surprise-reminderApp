@@ -9,6 +9,13 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="icon" href="icons/icon-192.png">
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  @media print {
+    #authScreen, header, #sideMenu, #sideMenuOverlay, #menuFab, .card:not(#repResultCard), #pagePayment { display: none !important; }
+  }
+</style>
 <style>
   :root {
     --navy: #1e1b7a;
@@ -419,6 +426,13 @@
   <div class="card" id="repResultCard" style="display:none;">
     <h2>نتیجه</h2>
     <div id="repResult"></div>
+    <div style="margin-top:16px; height:220px;">
+      <canvas id="repChart"></canvas>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button class="btn-primary" id="repExcelBtn" style="background:var(--ok);">دانلود اکسل</button>
+      <button class="btn-primary" id="repPdfBtn" style="background:var(--orange);">دانلود PDF</button>
+    </div>
   </div>
 </main>
 
@@ -440,6 +454,7 @@
       </div>
       <button class="btn-primary" id="confirmPayBtn">ثبت دریافت</button>
     </div>
+    <div class="card" id="paymentHistory"></div>
   </div>
 </div>
 
