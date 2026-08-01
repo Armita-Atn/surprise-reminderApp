@@ -242,7 +242,7 @@ function initApp() {
   document.getElementById('addBtn').addEventListener('click', async () => {
     const name = document.getElementById('custName').value.trim();
     const amount = document.getElementById('custAmount').value.replace(/,/g, '');
-    const graceDays = Number(document.getElementById('graceDays').value) || 25;
+    const graceDays = Number(document.getElementById('graceDays').value) || 0;
     const jy = Number(yearSel.value), jm = Number(monthSel.value), jd = Number(daySel.value);
 
     if (!name) {
